@@ -17,26 +17,31 @@ workflows:
           rm -rf Pods Podfile.lock
           cd ..
 
-      - name: Fully patch Podfile with modular headers and post_install
+      - name: Patch Podfile for Firebase modular headers
         script: |
-          echo "Patching Podfile for modular headers and non-modular includes..."
-
-          # Ensure use_frameworks! and use_modular_headers!
+          echo "Ensuring use_modular_headers! is in place..."
           sed -i '' 's/^use_frameworks!/use_frameworks!\nuse_modular_headers!/' ios/Podfile
 
-          # Add modular_headers for Firebase/Core and Messaging
-          echo "pod 'Firebase/Core', :modular_headers => true" >> ios/Podfile
-          echo "pod 'Firebase/Messaging', :modular_headers => true" >> ios/Podfile
+          echo "Adding modular_headers for Firebase Messaging and Core..."
+          if ! grep -q "pod 'Firebase/Messaging'" ios/Podfile; then
+            echo "pod 'Firebase/Messaging', :modular_headers => true" >> ios/Podfile
+          fi
+          if ! grep -q "pod 'Firebase/Core'" ios/Podfile; then
+            echo "pod 'Firebase/Core', :modular_headers => true" >> ios/Podfile
+          fi
 
-          # Append post_install block safely
-          echo "" >> ios/Podfile
-          echo "post_install do |installer|" >> ios/Podfile
-          echo "  installer.pods_project.targets.each do |target|" >> ios/Podfile
-          echo "    target.build_configurations.each do |config|" >> ios/Podfile
-          echo "      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'" >> ios/Podfile
-          echo "    end" >> ios/Podfile
-          echo "  end" >> ios/Podfile
-          echo "end" >> ios/Podfile
+          echo "Checking for existing post_install block..."
+          if grep -q "post_install do |installer|" ios/Podfile; then
+            echo "Injecting CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES setting..."
+            sed -i '' "/post_install do |installer|/a\\
+              installer.pods_project.targets.each do |target|\\
+                target.build_configurations.each do |config|\\
+                  config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'\\
+                end\\
+              end" ios/Podfile
+          else
+            echo "⚠️ Skipping post_install injection – post_install block not found!"
+          fi
 
       - name: Install dependencies
         script: |
