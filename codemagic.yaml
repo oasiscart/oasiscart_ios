@@ -17,31 +17,7 @@ workflows:
           rm -rf Pods Podfile.lock
           cd ..
 
-      - name: Patch Podfile for Firebase modular headers
-        script: |
-          echo "Ensuring use_modular_headers! is in place..."
-          sed -i '' 's/^use_frameworks!/use_frameworks!\nuse_modular_headers!/' ios/Podfile
-
-          echo "Adding modular_headers for Firebase Messaging and Core..."
-          if ! grep -q "pod 'Firebase/Messaging'" ios/Podfile; then
-            echo "pod 'Firebase/Messaging', :modular_headers => true" >> ios/Podfile
-          fi
-          if ! grep -q "pod 'Firebase/Core'" ios/Podfile; then
-            echo "pod 'Firebase/Core', :modular_headers => true" >> ios/Podfile
-          fi
-
-          echo "Checking for existing post_install block..."
-          if grep -q "post_install do |installer|" ios/Podfile; then
-            echo "Injecting CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES setting..."
-            sed -i '' "/post_install do |installer|/a\\
-              installer.pods_project.targets.each do |target|\\
-                target.build_configurations.each do |config|\\
-                  config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'\\
-                end\\
-              end" ios/Podfile
-          else
-            echo "⚠️ Skipping post_install injection – post_install block not found!"
-          fi
+      # 🔥 Removed dynamic Podfile patching (already done in source)
 
       - name: Install dependencies
         script: |
