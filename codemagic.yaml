@@ -1,6 +1,6 @@
 workflows:
   ios-build:
-    name: iOS Build with Firebase Messaging Fix
+    name: iOS Build with Firebase Dynamic Links Fix
     triggering:
       events:
         - push
@@ -27,6 +27,19 @@ workflows:
             echo "ERROR: use_modular_headers! not found in Podfile"
             exit 1
           fi
+      - name: Add post_install hook for non-modular includes
+        script: |
+          echo "Patching Podfile to allow non-modular includes..."
+          cat <<EOF >> ios/Podfile
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+    end
+  end
+end
+EOF
       - name: Install dependencies
         script: |
           flutter pub get
