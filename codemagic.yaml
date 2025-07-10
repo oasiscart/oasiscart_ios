@@ -16,36 +16,35 @@ workflows:
           cd ios
           rm -rf Pods Podfile.lock
           cd ..
-      - name: Patch Podfile with modular Firebase Messaging
-        script: |
-          if grep -q "use_modular_headers!" ios/Podfile; then
-            echo "Patching Podfile for Firebase Messaging..."
-            sed -i '' "/use_modular_headers!/a\\
-            pod 'Firebase/Messaging', :modular_headers => true
-            " ios/Podfile
-          else
-            echo "ERROR: use_modular_headers! not found in Podfile"
-            exit 1
-          fi
-      - name: Add post_install hook for non-modular includes
-        script: |
-          echo "Patching Podfile to allow non-modular includes..."
-          cat <<EOF >> ios/Podfile
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-    end
-  end
-end
-EOF
+      - name: Fully patch Podfile with modular headers and post_install
+        script: |
+          echo "Patching Podfile for modular headers and non-modular includes..."
+
+          # Ensure use_frameworks! and use_modular_headers!
+          sed -i '' 's/^use_frameworks!/use_frameworks!\nuse_modular_headers!/' ios/Podfile
+
+          # Add modular_headers for Firebase/Core and Messaging
+          echo "pod 'Firebase/Core', :modular_headers => true" >> ios/Podfile
+          echo "pod 'Firebase/Messaging', :modular_headers => true" >> ios/Podfile
+
+          # Append post_install block safely
+          echo "" >> ios/Podfile
+          echo "post_install do |installer|" >> ios/Podfile
+          echo "  installer.pods_project.targets.each do |target|" >> ios/Podfile
+          echo "    target.build_configurations.each do |config|" >> ios/Podfile
+          echo "      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'" >> ios/Podfile
+          echo "    end" >> ios/Podfile
+          echo "  end" >> ios/Podfile
+          echo "end" >> ios/Podfile
+
       - name: Install dependencies
         script: |
           flutter pub get
           cd ios
-          pod install
+          pod install --repo-update
           cd ..
+
       - name: Build iOS
         script: |
           flutter build ios --release
