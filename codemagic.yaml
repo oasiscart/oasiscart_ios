@@ -50,5 +50,5 @@ workflows:
           pod install --repo-update
           cd ..
 
-      - name: 🏗️ Build iOS release
-        script: flutter build ios --release
+      - name: 🏗️ Build iOS IPA
+        script: flutter build ipa --release
