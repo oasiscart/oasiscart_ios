@@ -1,25 +1,29 @@
 workflows:
   ios-build:
-    name: iOS Build with Firebase Modular Headers Fix
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: main
-          include: true
-
+    name: iOS Build with Firebase Patch
     environment:
       flutter: stable
       xcode: latest
 
     scripts:
       - name: 🔄 Clean previous builds
-        script: |
-          flutter clean
+        script: flutter clean
 
       - name: 📦 Get Flutter dependencies
+        script: flutter pub get
+
+      - name: 🔧 Patch Firebase Dynamic Links header
         script: |
-          flutter pub get
+          FILE_PATH=$(find . -path "*/firebase_dynamic_links*/ios/Classes/FLTFirebaseDynamicLinksPlugin.h" | head -n 1)
+          if [ -f "$FILE_PATH" ]; then
+            echo "✅ Found: $FILE_PATH"
+            echo "🔧 Removing non-modular #import"
+            sed -i '/#import <Firebase\/Firebase.h>/d' "$FILE_PATH"
+            echo "🔧 Adding @import Firebase;"
+            sed -i '1s;^;@import Firebase;\n;' "$FILE_PATH"
+          else
+            echo "❌ FLTFirebaseDynamicLinksPlugin.h not found!"
+          fi
 
       - name: 🧹 Clean CocoaPods cache
         script: |
@@ -34,5 +38,4 @@ workflows:
           cd ..
 
       - name: 🏗️ Build iOS release
-        script: |
-          flutter build ios --release
+        script: flutter build ios --release
