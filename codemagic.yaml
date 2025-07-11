@@ -21,30 +21,11 @@ workflows:
         script: |
           flutter pub get
 
-      - name: 📂 Copy GoogleService-Info.plist
-        script: |
-          # This assumes you uploaded the plist file in Codemagic's UI under "Environment variables & files"
-          cp $FCI_BUILD_DIR/GoogleService-Info.plist ios/Runner/
-
       - name: 🧹 Clean CocoaPods cache
         script: |
           cd ios
           rm -rf Pods Podfile.lock
           cd ..
-
-      - name: 🔧 Patch Firebase header in Dynamic Links
-        script: |
-          HEADER_FILE=".pub-cache/hosted/pub.dev/firebase_dynamic_links-*/ios/Classes/FLTFirebaseDynamicLinksPlugin.h"
-          FILE_PATH=$(find . -path "*$HEADER_FILE" | head -n 1)
-          if [ -f "$FILE_PATH" ]; then
-            echo "⚙️ Found: $FILE_PATH"
-            grep -q '#import <Firebase/Firebase.h>' "$FILE_PATH" && {
-              echo "✅ Patching Firebase import..."
-              sed -i.bak 's|#import <Firebase/Firebase.h>|@import Firebase;|g' "$FILE_PATH"
-            }
-          else
-            echo "❌ Firebase Dynamic Links header not found!"
-          fi
 
       - name: 📥 Install CocoaPods dependencies
         script: |
