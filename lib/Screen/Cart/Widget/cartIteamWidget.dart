@@ -614,7 +614,7 @@ class _CartIteamState extends State<CartIteam> {
                     ? Text(
                   deliveryMsg != ''
                       ? deliveryMsg
-                      : getTranslated(context, 'NOT_DEL'),
+                      : getTranslated(context, ''),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   softWrap: true,

@@ -165,6 +165,6 @@ class RadioModel {
     this.onEditSelected,
     this.onSetDefault,
     this.show,
-    this.onDeleteSelected,
+    this.onDeleteSelected, required String img,
   });
 }

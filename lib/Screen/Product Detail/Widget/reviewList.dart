@@ -286,7 +286,7 @@ class StateRate extends State<ReviewList> {
                             width: 5,
                           ),
                           Text(
-                            "${getTranslated(context, "WITH_PHOTO")}",
+                            getTranslated(context, "WITH_PHOTO"),
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -603,7 +603,7 @@ class StateRate extends State<ReviewList> {
           });
         }
       } on TimeoutException catch (_) {
-        setSnackbar(getTranslated(context, 'somethingMSg')!);
+        setSnackbar(getTranslated(context, 'somethingMSg'));
         if (mounted) {
           setState(() {
             _isLoading = false;

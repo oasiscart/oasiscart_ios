@@ -3,7 +3,6 @@ import 'package:eshop_multivendor/Screen/Product%20Detail/Widget/reviewList.dart
 import 'package:eshop_multivendor/Screen/ProductPreview/productPreview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import '../../../Helper/Constant.dart';
 import '../../../Helper/String.dart';

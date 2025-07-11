@@ -39,6 +39,7 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
 
   Animation? buttonSqueezeanimation;
   AnimationController? buttonController;
+  bool isInitialized = false;
 
   setStateNow() {
     setState(() {});
@@ -110,6 +111,7 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
       await buttonController!.forward();
     } on TickerCanceled {}
   }
+
 
   setStateNoInternate() async {
     _playAnimation();
