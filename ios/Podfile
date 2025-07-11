@@ -50,7 +50,9 @@ post_install do |installer|
       config.build_settings['SWIFT_VERSION'] = '5.5'
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
       config.build_settings['ARCHS[sdk=iphonesimulator*]'] = 'x86_64'
-      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64" # For Razorpay
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64" # For 
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+
     end
 
     # 👇 Make sure this is called outside the loop!
