@@ -1,6 +1,6 @@
 workflows:
   ios-build:
-    name: iOS Build with Firebase Dynamic Links Fix
+    name: iOS Build with Firebase Modular Headers Fix
     triggering:
       events:
         - push
@@ -27,7 +27,7 @@ workflows:
           rm -rf Pods Podfile.lock
           cd ..
 
-      - name: 📥 Install CocoaPods
+      - name: 📥 Install CocoaPods dependencies
         script: |
           cd ios
           pod install --repo-update
