@@ -10,26 +10,22 @@ workflows:
     environment:
       flutter: stable
       xcode: latest
-    certificates:
-      - certificate: "certificate.p12"
-        password: "12345678"  # 🔐 Or use Encrypted(env(IOS_CERT_PASSWORD))
-    provisioning_profiles:
-      - bundle_id: "oasis.eshop.multivendor"
-        profile: "Oasis_Cart_iOS_App_ios_app_store_1752145014.mobileprovision"
     scripts:
       - name: Clean Pod cache
         script: |
           cd ios
           rm -rf Pods Podfile.lock
           cd ..
+
+      # 🔥 Removed dynamic Podfile patching (already done in source)
+
       - name: Install dependencies
         script: |
           flutter pub get
           cd ios
           pod install --repo-update
           cd ..
+
       - name: Build iOS
         script: |
           flutter build ios --release
-
-
