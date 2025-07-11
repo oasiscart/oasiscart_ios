@@ -25,6 +25,17 @@ workflows:
             echo "❌ FLTFirebaseDynamicLinksPlugin.h not found!"
           fi
 
+      - name: 🔧 Patch Firebase Messaging header
+        script: |
+          FILE_PATH=$(find . -path "*/firebase_messaging*/ios/Classes/FLTFirebaseMessagingPlugin.h" | head -n 1)
+          if [ -f "$FILE_PATH" ]; then
+            echo "✅ Found: $FILE_PATH"
+            sed -i '/#import <Firebase\/Firebase.h>/d' "$FILE_PATH"
+            sed -i '1s;^;@import Firebase;\n;' "$FILE_PATH"
+          else
+            echo "❌ FLTFirebaseMessagingPlugin.h not found!"
+          fi
+
       - name: 🧹 Clean CocoaPods cache
         script: |
           cd ios
