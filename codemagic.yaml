@@ -1,0 +1,28 @@
+workflows:
+  ios-build:
+    name: iOS Build with Firebase Patch
+    environment:
+      flutter: stable
+      xcode: latest
+
+    scripts:
+      - name: 🔄 Clean previous builds
+        script: flutter clean
+
+      - name: 📦 Get Flutter dependencies
+        script: flutter pub get
+        
+      - name: 🧹 Clean CocoaPods cache
+        script: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          cd ..
+
+      - name: 📥 Install CocoaPods dependencies
+        script: |
+          cd ios
+          pod install --repo-update
+          cd ..
+
+      - name: 🏗️ Build iOS IPA
+        script: flutter build ipa --release
