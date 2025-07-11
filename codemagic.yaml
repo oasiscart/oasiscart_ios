@@ -17,7 +17,6 @@ workflows:
           rm -rf Pods Podfile.lock
           cd ..
 
-      # 🔥 Removed dynamic Podfile patching (already done in source)
 
       - name: Install dependencies
         script: |
