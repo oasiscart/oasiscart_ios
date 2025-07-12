@@ -6,7 +6,7 @@ version: 2.9.6+37
 
 
 environment:
-  sdk: ">=2.15.1 <3.0.0"
+  sdk: ">=3.1.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -38,7 +38,7 @@ dependencies:
   firebase_dynamic_links: ^5.4.14
   open_filex: ^4.4.0
   provider: ^6.1.1
-  share_plus: ^9.0.0
+  share_plus: ^9.0.0   
   firebase_core: ^2.25.4
   video_player: ^2.4.10
   flutter_svg: ^2.0.9
@@ -72,6 +72,10 @@ dependencies:
   app_links: ^6.1.1
   scroll_to_index: ^3.0.1
   scrollable_positioned_list: ^0.3.5
+  chewie: ^1.7.4
+  wakelock_plus: ^1.3.0
+
+
 
 dev_dependencies:
   flutter_test:
@@ -84,10 +88,7 @@ dev_dependencies:
 dependency_overrides:
   webview_flutter_android: 3.16.1
   intl: ^0.18.1
-  chewie:
-    git:
-      url: https://github.com/mdeimert/chewie.git
-      ref: master
+
   flutter_paystack:
     git:
       url: https://github.com/I-driod/flutter_paystack.git
