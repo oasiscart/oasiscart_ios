@@ -32,6 +32,15 @@ workflows:
         script: |
           zip -j podfile-lock.zip ios/Podfile.lock
 
+      - name: ✏️ Generate pigeon files (wakelock_plus)
+        script: |
+          flutter pub run pigeon \
+            --input .pub-cache/hosted/pub.dev/wakelock_plus-1.3.0/pigeons/messages.dart \
+            --objc_header_out ios/Classes/messages.g.h \
+            --objc_source_out ios/Classes/messages.g.m \
+            --objc_prefix WP
+
+
       - name: 🏗️ Build iOS IPA (no codesign)
         script: |
           flutter build ipa --release --no-codesign \
