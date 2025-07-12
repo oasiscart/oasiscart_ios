@@ -34,8 +34,7 @@ workflows:
 
       - name: 🏗️ Build iOS IPA (no codesign)
         script: |
-          flutter build ipa --release --no-codesign \
-            --dart-define=FLUTTER_BUILD_MODE=release 
+          flutter build ipa --release --no-codesign 
 
     artifacts:
       - build/ios/ipa/*.ipa
