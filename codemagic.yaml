@@ -19,6 +19,15 @@ workflows:
           pod install --repo-update
           cd ..
 
+
+      - name: 🐦 Generate pigeon files for wakelock_plus
+        script: |
+          pigeon \
+          --input .pub-cache/hosted/pub.dev/wakelock_plus-1.3.2/pigeons/messages.dart \
+          --objc_header_out .pub-cache/hosted/pub.dev/wakelock_plus-1.3.2/ios/wakelock_plus/Sources/wakelock_plus/messages.g.h \
+          --objc_source_out .pub-cache/hosted/pub.dev/wakelock_plus-1.3.2/ios/wakelock_plus/Sources/wakelock_plus/messages.g.m \
+          --dart_out .pub-cache/hosted/pub.dev/wakelock_plus-1.3.2/lib/messages.g.dart
+
       - name: 🛠️ Optional Header Patch (if needed)
         script: |
           if [ -f ios/Pods/Headers/Public/Firebase/Firebase.h ]; then
