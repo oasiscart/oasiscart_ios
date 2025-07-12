@@ -1,5 +1,5 @@
-platform :ios, '12.0'
-ENV ['COCOAPODS_DISABLE_STATS'] = 'true'
+platform :ios, '14.0'
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
   'Debug' => :debug,
@@ -30,7 +30,7 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  
+
   pod 'Firebase/Core', :modular_headers => true
   pod 'Firebase/Messaging', :modular_headers => true
   pod 'Firebase/DynamicLinks', :modular_headers => true
