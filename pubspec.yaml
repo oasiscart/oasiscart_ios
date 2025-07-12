@@ -73,7 +73,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.5
   chewie: ^1.7.4
   pigeon: ^18.0.0
-  wakelock_plus: 1.3.0
+
 
   
 
@@ -89,6 +89,12 @@ dev_dependencies:
 dependency_overrides:
   webview_flutter_android: 3.16.1
   intl: ^0.18.1
+  wakelock_plus:
+    git:
+      url: https://github.com/fluttercommunity/wakelock_plus.git
+      ref: main
+      path: wakelock_plus
+
 
   
   flutter_paystack:
