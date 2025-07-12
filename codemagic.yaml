@@ -17,7 +17,6 @@ workflows:
           rm -rf ~/Library/Caches/CocoaPods
           rm -rf ~/Library/Developer/Xcode/DerivedData
           cd ios
-          rm -rf Pods Podfile.lock
           pod install --repo-update
           cd ..
 
