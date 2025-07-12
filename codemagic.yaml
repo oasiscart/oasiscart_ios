@@ -1,12 +1,46 @@
 workflows:
-  ios-release-no-shorebird:
-    name: iOS Release
+  ios-build:
+    name: iOS Build with Firebase Patch
     environment:
       flutter: stable
       xcode: latest
+      cocoapods: default
+
     scripts:
-      - flutter build ios --simulator
-      - mkdir -p build/ios/ipa
-      - zip -r build/ios/ipa/Runner.app.zip build/ios/iphonesimulator/Runner.app
+      - name: 🔄 Clean Flutter build & get dependencies
+        script: |
+          flutter clean
+          flutter pub get
+
+      - name: 🧹 Clean CocoaPods + Derived Data & Install Pods
+        script: |
+          rm -rf ~/Library/Caches/CocoaPods
+          rm -rf ~/Library/Developer/Xcode/DerivedData
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod install --repo-update
+          cd ..
+
+      - name: 📦 Archive Podfile.lock for download
+        script: |
+          zip -j podfile-lock.zip ios/Podfile.lock
+
+      - name: 🏗️ Build iOS IPA (no codesign)
+        script: |
+          flutter build ipa --release --no-codesign \
+            --dart-define=FLUTTER_BUILD_MODE=release
+
     artifacts:
-      - build/ios/ipa/Runner.app.zip
+      - build/ios/ipa/*.ipa
+      - podfile-lock.zip  # ✅ Download this from Codemagic Artifacts
+
+    cache:
+      cache_paths:
+        - $HOME/Library/Caches/CocoaPods
+        - $HOME/.pub-cache
+        - ios/Pods
+
+    publishing:
+      email:
+        recipients:
+          - pravinshann02@gmail.com
