@@ -26,16 +26,15 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks! :linkage => :static
-  # use_modular_headers!
+    use_frameworks! :linkage => :static
 
-   # Add these Firebase-specific pod configurations
-  pod 'Firebase', :modular_headers => true
-  pod 'FirebaseMessaging', :modular_headers => true
-  pod 'FirebaseDynamicLinks', :modular_headers => true
+    pod 'Firebase', :modular_headers => true
+    pod 'FirebaseMessaging', :modular_headers => true
+    pod 'FirebaseDynamicLinks', :modular_headers => true
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
+
 
 post_install do |installer|
   # Prevent static framework transitive dependency errors
