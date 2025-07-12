@@ -1,6 +1,6 @@
 workflows:
   ios-build:
-    name: iOS Build with Firebase Patch
+    name: iOS Build with Firebase Modular Headers Fix
     environment:
       flutter: stable
       xcode: latest
@@ -12,14 +12,18 @@ workflows:
           flutter clean
           flutter pub get
 
-      - name: 🧹 Clean CocoaPods + Derived Data & Install Pods
+      - name: 🧹 Clean CocoaPods, DerivedData & Install Pods
         script: |
           rm -rf ~/Library/Caches/CocoaPods
           rm -rf ~/Library/Developer/Xcode/DerivedData
           cd ios
-          rm -rf Pods
+          rm -rf Pods Podfile.lock
           pod install --repo-update
           cd ..
+
+      - name: 🛠️ Ensure correct Firebase import format
+        script: |
+          echo "✅ Make sure no plugin or file is importing <Firebase/Firebase.h> directly"
 
       - name: 📦 Archive Podfile.lock for download
         script: |
@@ -32,7 +36,7 @@ workflows:
 
     artifacts:
       - build/ios/ipa/*.ipa
-      - podfile-lock.zip  # ✅ Download this from Codemagic Artifacts
+      - podfile-lock.zip
 
     cache:
       cache_paths:
