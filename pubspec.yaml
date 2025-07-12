@@ -89,6 +89,9 @@ dev_dependencies:
 dependency_overrides:
   webview_flutter_android: 3.16.1
   intl: ^0.18.1
+  wakelock_plus:
+    path: dummy/wakelock_plus
+  wakelock: ^0.4.0 
   
   flutter_paystack:
     git:
