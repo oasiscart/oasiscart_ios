@@ -32,8 +32,8 @@ target 'Runner' do
 
 
   pod 'FirebaseCore', :modular_headers => true
-  pod 'FirebaseMessaging', 
-  pod 'FirebaseDynamicLinks',
+  pod 'FirebaseMessaging'
+  pod 'FirebaseDynamicLinks'
 
 end
 
