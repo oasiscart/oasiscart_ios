@@ -46,7 +46,7 @@ workflows:
 
       - name: 🏗️ Build IPA (no code signing)
         script: |
-          flutter build ipa --release --no-codesign --no-tree-shake-icons --verbose
+          flutter build ipa --release --no-tree-shake-icons --verbose
 
     artifacts:
       - build/ios/ipa/*.ipa
