@@ -32,8 +32,8 @@ target 'Runner' do
 
 
   pod 'FirebaseCore', :modular_headers => true
-  pod 'FirebaseMessaging', :modular_headers => true
-  pod 'FirebaseDynamicLinks', :modular_headers => true
+  pod 'FirebaseMessaging', 
+  pod 'FirebaseDynamicLinks',
 
 end
 
@@ -69,6 +69,8 @@ post_install do |installer|
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
       config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
       config.build_settings['DEFINES_MODULE'] = 'YES'
+      config.build_settings['OTHER_SWIFT_FLAGS'] = '-Xfrontend -disable-module-interface-validation'
+
     end
 
     flutter_additional_ios_build_settings(target)
