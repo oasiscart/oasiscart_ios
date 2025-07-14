@@ -12,25 +12,29 @@ workflows:
           flutter clean
           flutter pub get
 
-      - name: 🧹 Clean DerivedData & Reinstall Pods
-        script: |
+      # 🧹 Full Cleanup: DerivedData, Pod Cache, Flutter Build Artifacts
+      - script: |
           rm -rf ~/Library/Developer/Xcode/DerivedData
+          rm -rf ios/Pods ios/.symlinks ios/Flutter/Flutter.framework ios/Flutter/App.framework ios/Flutter/engine .dart_tool build
+
+      - name: 🧩 Reinstall Pods from Scratch
+        script: |
           cd ios
           pod deintegrate
           pod install --repo-update
           cd ..
 
-      - name: ⚙️ Set Swift Flags for Firebase Interface Issues
+      - name: ⚙️ Patch OTHER_SWIFT_FLAGS into .xcconfig
         script: |
-          export OTHER_SWIFT_FLAGS="-Xfrontend -disable-module-interface-validation"
+          echo "OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation" >> ios/Flutter/Release.xcconfig
+          echo "OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation" >> ios/Flutter/Debug.xcconfig
+          echo "OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation" >> ios/Flutter/Profile.xcconfig
 
-      - name: 🛠️ Optional Header Patch (if needed)
+      - name: 🛠️ Optional Firebase Header Patch
         script: |
           if [ -f ios/Pods/Headers/Public/Firebase/Firebase.h ]; then
             echo "✅ Firebase.h found, archiving for inspection"
             zip -r firebase-headers.zip ios/Pods/Headers/Public/Firebase
-          else
-            echo "⚠️ Firebase.h not found - may not be generated yet"
           fi
 
       - name: 📦 Archive Podfile.lock
@@ -50,9 +54,3 @@ workflows:
       cache_paths:
         - $HOME/Library/Caches/CocoaPods
         - $HOME/.pub-cache
-        - ios/Pods
-
-    publishing:
-      email:
-        recipients:
-          - pravinshann02@gmail.com
