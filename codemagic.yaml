@@ -14,25 +14,27 @@ workflows:
           rm -rf ios/Flutter/Flutter.framework ios/Flutter/engine
           rm -rf ~/Library/Developer/Xcode/DerivedData
           flutter pub get
+
+      - name: 🔧 Patch Podfile for Firebase modular headers and GoogleSignIn fix
+        script: |
+          # Patch Podfile for use_modular_headers and static linking
+          sed -i '' 's/use_frameworks! .*/use_frameworks! :linkage => :static\n  use_modular_headers!/' ios/Podfile || true
+
+          # Force GoogleSignIn 8.0 compatibility (if not already pinned)
+          grep -q "pod 'GoogleSignIn'," ios/Podfile || echo "  pod 'GoogleSignIn', '~> 8.0'" >> ios/Podfile
+
+          # Force modular headers for Firebase pods
+          sed -i '' "s/pod 'FirebaseMessaging'/pod 'FirebaseMessaging', :modular_headers => true/" ios/Podfile || true
+          sed -i '' "s/pod 'FirebaseDynamicLinks'/pod 'FirebaseDynamicLinks', :modular_headers => true/" ios/Podfile || true
+
+      - name: 📦 Update CocoaPods
+        script: |
           cd ios
-          pod repo update                # ✅ <--- Add this line
+          pod repo update
           pod install --repo-update
           cd ..
 
-      - name: 🔧 Patch Podfile for Firebase modular headers and SwiftEmit fix
-        script: |
-          sed -i '' 's/use_frameworks! .*/use_frameworks! :linkage => :static\n  use_modular_headers!/' ios/Podfile
-          sed -i '' "s/pod 'FirebaseMessaging'/pod 'FirebaseMessaging', :modular_headers => true/" ios/Podfile
-          sed -i '' "s/pod 'FirebaseDynamicLinks'/pod 'FirebaseDynamicLinks', :modular_headers => true/" ios/Podfile
-
-      - name: 🧩 Reinstall CocoaPods
-        script: |
-          cd ios
-          pod deintegrate
-          pod install --repo-update
-          cd ..
-
-      - name: ⚙️ Add Swift Flags (optional fallback)
+      - name: ⚙️ Add Swift Flags
         script: |
           echo 'OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation' >> ios/Flutter/Debug.xcconfig
           echo 'OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation' >> ios/Flutter/Profile.xcconfig
@@ -40,7 +42,7 @@ workflows:
 
       - name: 📦 Archive Podfile.lock
         script: |
-          zip -j podfile-lock.zip ios/Podfile.lock
+          zip -j podfile-lock.zip ios/Podfile.lock || echo "No Podfile.lock found."
 
       - name: 🏗️ Build IPA (no code signing)
         script: |
