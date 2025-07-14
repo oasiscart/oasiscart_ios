@@ -12,12 +12,17 @@ workflows:
           flutter clean
           flutter pub get
 
-      - name: 🧹 Clean DerivedData & Reinstall Pods (Keep Pods folder)
+      - name: 🧹 Clean DerivedData & Reinstall Pods
         script: |
           rm -rf ~/Library/Developer/Xcode/DerivedData
           cd ios
+          pod deintegrate
           pod install --repo-update
           cd ..
+
+      - name: ⚙️ Set Swift Flags for Firebase Interface Issues
+        script: |
+          export OTHER_SWIFT_FLAGS="-Xfrontend -disable-module-interface-validation"
 
       - name: 🛠️ Optional Header Patch (if needed)
         script: |
@@ -34,7 +39,7 @@ workflows:
 
       - name: 🏗️ Build iOS IPA (no codesign)
         script: |
-          flutter build ipa --release --no-codesign 
+          flutter build ipa --release --no-codesign --no-tree-shake-icons --verbose
 
     artifacts:
       - build/ios/ipa/*.ipa
