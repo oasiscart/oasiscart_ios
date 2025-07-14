@@ -1,6 +1,6 @@
 workflows:
   ios-build:
-    name: iOS Build with Firebase Modular Headers Fix
+    name: iOS Build with Firebase Fixes
     environment:
       flutter: stable
       xcode: latest
@@ -12,43 +12,43 @@ workflows:
           flutter clean
           flutter pub get
 
-      # 🧹 Full Cleanup: DerivedData, Pod Cache, Flutter Build Artifacts
-      - script: |
+      - name: 🧹 Clean CocoaPods & DerivedData
+        script: |
           rm -rf ~/Library/Developer/Xcode/DerivedData
-          rm -rf ios/Pods ios/.symlinks ios/Flutter/Flutter.framework ios/Flutter/App.framework ios/Flutter/engine .dart_tool build
+          rm -rf ios/Pods ios/.symlinks ios/Flutter
+          rm -rf .dart_tool build
 
-      - name: 🧩 Reinstall Pods from Scratch
+      - name: 🔧 Patch Podfile for Firebase modular headers and SwiftEmit fix
+        script: |
+          sed -i 's/use_frameworks! .*/use_frameworks! :linkage => :static\n  use_modular_headers!/' ios/Podfile
+          sed -i "s/pod 'FirebaseMessaging'/pod 'FirebaseMessaging', :modular_headers => true/" ios/Podfile
+          sed -i "s/pod 'FirebaseDynamicLinks'/pod 'FirebaseDynamicLinks', :modular_headers => true/" ios/Podfile
+
+      - name: 🧩 Reinstall CocoaPods
         script: |
           cd ios
           pod deintegrate
           pod install --repo-update
           cd ..
 
-      - name: ⚙️ Patch OTHER_SWIFT_FLAGS into .xcconfig
+      - name: ⚙️ (Optional) Add Swift Flags if needed
         script: |
-          echo "OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation" >> ios/Flutter/Release.xcconfig
-          echo "OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation" >> ios/Flutter/Debug.xcconfig
-          echo "OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation" >> ios/Flutter/Profile.xcconfig
-
-      - name: 🛠️ Optional Firebase Header Patch
-        script: |
-          if [ -f ios/Pods/Headers/Public/Firebase/Firebase.h ]; then
-            echo "✅ Firebase.h found, archiving for inspection"
-            zip -r firebase-headers.zip ios/Pods/Headers/Public/Firebase
-          fi
+          # This is likely redundant if your Podfile's `post_install` block sets it already.
+          echo 'OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation' >> ios/Flutter/Debug.xcconfig
+          echo 'OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation' >> ios/Flutter/Profile.xcconfig
+          echo 'OTHER_SWIFT_FLAGS = -Xfrontend -disable-module-interface-validation' >> ios/Flutter/Release.xcconfig
 
       - name: 📦 Archive Podfile.lock
         script: |
           zip -j podfile-lock.zip ios/Podfile.lock
 
-      - name: 🏗️ Build iOS IPA (no codesign)
+      - name: 🏗️ Build IPA (no code signing)
         script: |
           flutter build ipa --release --no-codesign --no-tree-shake-icons --verbose
 
     artifacts:
       - build/ios/ipa/*.ipa
       - podfile-lock.zip
-      - firebase-headers.zip
 
     cache:
       cache_paths:
